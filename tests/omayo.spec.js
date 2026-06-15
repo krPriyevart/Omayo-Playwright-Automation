@@ -1,5 +1,6 @@
 import {test, expect } from '@playwright/test'
 import { link } from 'node:fs';
+import { type } from 'node:os';
 import path from 'node:path';
 import os from 'os';
 
@@ -164,5 +165,41 @@ test('Text Area Field', async({page}) =>{
 });
 test('Text area with pretext', async({page}) =>{
     const text  = await page.locator('#HTML11').locator('textarea').pressSequentially('#The cat was playing in the garden.#');
+    await page.pause();
+});
+test('get table data and convert to json', async({page}) =>{
+  // 1. Fetch all header texts in one step
+  const headers = await page.locator('#table1 thead th').allInnerTexts();
+  const keys = headers.map(h => h.trim().toLowerCase()); // ['name', 'age', 'place']
+
+  // 2. Locate all rows in the table body
+  const rows = await page.locator('#table1 tbody tr').all();
+  
+  // 3. Map rows to JSON objects using a clean locator loop
+  const tableDataJson = await Promise.all(rows.map(async (row) => {
+    const cells = await row.locator('td').allInnerTexts();
+    return Object.fromEntries(keys.map((key, i) => [key, cells[i]]));
+  }));
+
+  // Output your structured array
+  console.log(tableDataJson);
+});
+test('login', async({page}) =>{
+    const form = await page.locator('form[name="form1"]');
+    await form.locator('input[type="text"]').fill('admin');
+    await form.locator('input[type="password"]').fill('1234');
+    await form.locator('button').click();
+
+    await page.pause();
+});
+test('handeling iframe', async({page}) =>{
+    const frame = await page.frameLocator('#iframe1');
+    const text = await frame.locator('table b a[href*="know-prior-to-learning.html"]').innerText();
+    console.log(text);
+});
+test('simple login', async({page}) =>{
+    await page.locator('form input[name="userid"]').fill('SeleniumByArun')
+    await page.locator('form input[name="pswrd"]').fill('Test143$')
+    await page.locator('.widget').filter({hasText:'Simple Login Page'}).locator('input[value="Login"]').click();
     await page.pause();
 })
