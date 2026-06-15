@@ -1,2 +1,2 @@
 ﻿# Omayo-Playwright-Automation
-Omayo Bloh link <a href="https://omayo.blogspot.com/">link</a>
+Omayo Blog link <a href="https://omayo.blogspot.com/">link</a>
